@@ -36,11 +36,11 @@ if __name__ == "__main__":
 
 
     # Mean squared displacement
-    msd = np.zeros((n,1))
+    msd = np.zeros(n)
     for i in range(n):
         for j in range(nop):
-            msd[i,0] += x[j,i]**2 + y[j,i]**2 + z[j,i]**2
-        msd[i,0] /= float(nop)
+            msd[i] += x[j,i]**2 + y[j,i]**2 + z[j,i]**2
+        msd[i] /= float(nop)
 
     plt.figure(2)
     plt.plot(msd)
@@ -82,6 +82,16 @@ if __name__ == "__main__":
     ax1.set_xlabel("time (s)")
     ax1.set_ylabel("distance from the center")
     ax1.set_zlabel("counts")
-    plt.show()
 
-    pass
+    # Autocorrelation with normalization
+    x_traj = np.cumsum(x[50,:])/n
+    y_traj = np.cumsum(y[50,:])/n
+    z_traj = np.cumsum(z[50,:])/n
+    traj = np.zeros(n)
+    for i in range(n):
+        traj[i] = np.sqrt(x_traj[i]**2 + y_traj[i]**2 + z_traj[i]**2)
+    autocorr = np.correlate(traj, traj, mode="full")
+    fig = plt.figure()
+    plt.plot(np.arange(0,n,1), autocorr)
+
+    plt.show()
