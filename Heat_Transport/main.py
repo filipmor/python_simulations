@@ -76,7 +76,7 @@ if __name__ == "__main__":
             for j in range(1, NY-1):
                 if(T_aux[i,j]==0.0):
                     T1[i,j] = T[i,j] + Cx * (T[i-1,j] - 2.0*T[i,j] + T[i+1,j]) + Cy * (T[i,j-1] - 2.0*T[i,j] + T[i,j+1])
-            print(T1[i,j])
+            #print(T1[i,j])
         Z = T1.reshape(XX.shape)
         surf = ax.plot_surface(XX, YY, Z, cmap=cm.coolwarm, linewidth=0, antialiased=False)
         fig.canvas.draw()

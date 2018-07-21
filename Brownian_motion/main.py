@@ -1,6 +1,8 @@
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pylab as plt
-from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+
 
 if __name__ == "__main__":
 
@@ -17,32 +19,39 @@ if __name__ == "__main__":
     # Initialize coordinates for all particles
     x = np.zeros((nop, n), dtype=np.float16)
     y = np.zeros((nop, n), dtype=np.float16)
+    z = np.zeros((nop, n), dtype=np.float16)
 
     # Generate motion - random walk
-    plt.figure(1)
+    fig = plt.figure(1)
+    ax = fig.gca(projection='3d')
     for i in range(nop):
         for j in range(1, n):
             x[i, j] = x[i, j-1] + np.random.normal(0)
             y[i, j] = y[i, j-1] + np.random.normal(0)
-        plt.plot(x[i,:], y[i,:])
-    plt.xlabel("X coord")
-    plt.ylabel("Y coord")
+            z[i, j] = z[i, j-1] + np.random.normal(0)
+        ax.plot(x[i,:], y[i,:], z[i,:])
+    ax.set_xlabel("X coord")
+    ax.set_ylabel("Y coord")
+    ax.set_zlabel("Z coord")
+
 
     # Mean squared displacement
     msd = np.zeros((n,1))
     for i in range(n):
         for j in range(nop):
-            msd[i,0] += x[j,i]**2 + y[j,i]**2
+            msd[i,0] += x[j,i]**2 + y[j,i]**2 + z[j,i]**2
         msd[i,0] /= float(nop)
 
     plt.figure(2)
     plt.plot(msd)
+    plt.xlabel("time [s]")
+    plt.ylabel("MSD")
 
     # Density distribution of particles
     R = np.zeros((nop, n))
     for i in range(nop):
         for j in range(n):
-            R[i, j] = np.sqrt(x[i,j]**2 + y[i,j]**2)
+            R[i, j] = np.sqrt(x[i,j]**2 + y[i,j]**2 + z[i,j]**2)
 
     # Divide the space into rings - represent density distrubution
     # in the form of 3-D histogram
@@ -63,11 +72,16 @@ if __name__ == "__main__":
             bin_n += 1
 
     # Plot histogram 3D
-    fig = plt.figure(3)
-    ax = Axes3D(fig)
-    ax.bar()
-    #ax1.bar3d(n_rings, count_fraction)
-
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111, projection='3d')
+    XX, YY = np.meshgrid(np.arange(0, n, 1), n_rings)
+    print(XX.shape)
+    print(YY.shape)
+    print(count_fraction.shape)
+    ax1.plot_surface(XX, YY, count_fraction, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+    ax1.set_xlabel("time (s)")
+    ax1.set_ylabel("distance from the center")
+    ax1.set_zlabel("counts")
     plt.show()
 
     pass
